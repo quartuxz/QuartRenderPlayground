@@ -138,8 +138,8 @@ namespace QuartRenderPlayground
             m_renderer = createRenderer(m_errorLog,1000,1000, (uint)RendererTypes.onscreenRendererIMGUI);
 
 
-            //IntPtr tempErrorLog = createLogger();
-            //IntPtr tempRenderer = createRenderer(tempErrorLog, 1000, 1000, (uint)RendererTypes.onscreenRenderer);
+            IntPtr tempErrorLog = createLogger();
+            IntPtr tempRenderer = createRenderer(tempErrorLog, 1000, 1000, (uint)RendererTypes.onscreenRenderer);
 
             Console.WriteLine("renderer call finished.");
             if (m_renderer == null)
@@ -157,7 +157,7 @@ namespace QuartRenderPlayground
             window = new RenderWindow(mode, "test");
             CircleShape cs = new CircleShape(100.0f);
             cs.FillColor = Color.Green;
-            window.SetFramerateLimit(60);
+            window.SetFramerateLimit(0);
             window.SetActive();
 
 
@@ -188,10 +188,11 @@ namespace QuartRenderPlayground
                     //destroyAllDrawTests();
                 }
 
-                //if (!safeGetAndAllowClose(tempRenderer, tempErrorLog))
-                //{
-                    //renderImage(tempRenderer, tempErrorLog);
-                //}
+                if (!safeGetAndAllowClose(tempRenderer, tempErrorLog))
+                {
+                    drawTest(tempRenderer, tempErrorLog, "asd",0,0);
+                    renderImage(tempRenderer, tempErrorLog);
+                }
 
 
 
