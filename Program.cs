@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -36,9 +37,12 @@ namespace QuartRenderPlayground
         unsafe public static extern int getAndAllowClose(IntPtr renderer, IntPtr errorLog, bool *val);
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int exitQuartRender();
-
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        unsafe public static extern void getLogString(IntPtr errorLog, StringBuilder str, uint *len);
 
         //TESTS!!
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int addTestError(IntPtr errorLog);
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int drawTest(IntPtr renderer, IntPtr errorLog, string name, float posx, float posy);
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -60,7 +64,30 @@ namespace QuartRenderPlayground
 
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int stopTestRenderer();
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        unsafe public static extern void testStringFunc(StringBuilder str, uint *len);
+
         //TESTS!!
+
+        unsafe static string safeGetTestString()
+        {
+            uint len;
+            testStringFunc(null, &len);
+            StringBuilder ret = new StringBuilder((int)len);
+
+            testStringFunc(ret, &len);
+            return ret.ToString();
+        }
+
+        unsafe static string safeGetLogString(IntPtr errorLog)
+        {
+            uint len;
+            getLogString(errorLog,null,&len);
+            StringBuilder ret = new StringBuilder((int)len);
+            getLogString(errorLog,ret,&len);
+            return ret.ToString();
+        }
+        
 
         unsafe static Image getRenderImageTest()
         {
@@ -138,8 +165,8 @@ namespace QuartRenderPlayground
             m_renderer = createRenderer(m_errorLog,1000,1000, (uint)RendererTypes.onscreenRendererIMGUI);
 
 
-            IntPtr tempErrorLog = createLogger();
-            IntPtr tempRenderer = createRenderer(tempErrorLog, 1000, 1000, (uint)RendererTypes.onscreenRenderer);
+            //IntPtr tempErrorLog = createLogger();
+            //IntPtr tempRenderer = createRenderer(tempErrorLog, 1000, 1000, (uint)RendererTypes.onscreenRenderer);
 
             Console.WriteLine("renderer call finished.");
             if (m_renderer == null)
@@ -147,7 +174,7 @@ namespace QuartRenderPlayground
                 Console.WriteLine("failed to create renderer!");
             }
 
-            
+
 
 
 
@@ -174,26 +201,30 @@ namespace QuartRenderPlayground
             {
                 time = clock.Restart();
 
-                Console.WriteLine(1/time.AsSeconds());
+                //Console.WriteLine(1/time.AsSeconds());
 
                 i -= Math.Truncate(i);
                 i += time.AsSeconds();
 
+                
                 if (!safeGetAndAllowClose(m_renderer, m_errorLog))
                 {
 
-                    drawTest(m_renderer, m_errorLog, "asd", (float)i, 0);
+                    //drawTest(m_renderer, m_errorLog, "asd", (float)i, 0);
                     drawTest(m_renderer, m_errorLog, "asd2", 0, (float)i);
                     renderImage(m_renderer, m_errorLog);
-                    //destroyAllDrawTests();
                 }
 
+
+                //Console.WriteLine(safeGetLogString(m_errorLog));
+                
+                /*
                 if (!safeGetAndAllowClose(tempRenderer, tempErrorLog))
                 {
                     drawTest(tempRenderer, tempErrorLog, "asd",0,0);
                     renderImage(tempRenderer, tempErrorLog);
                 }
-
+                */
 
 
 
