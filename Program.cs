@@ -9,8 +9,46 @@ using SFML.Graphics;
 using SFML.System;
 using SFML.Window;
 
+
+
 namespace QuartRenderPlayground
 {
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct KeyboardInput
+    {
+        public int key;
+        public int scancode;
+        public int action;
+        public int mods;
+        public bool capturedByIMGUI;
+        public bool isValid;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct CursorPosition
+    {
+        public double xpos;
+        public double ypos;
+        public bool capturedByIMGUI;
+    }
+
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct testStruct
+    {
+        int ID;
+        UInt16 data16;
+        byte data8;
+
+        public void display()
+        {
+            Console.WriteLine(ID);
+            Console.WriteLine(data16);
+            Console.WriteLine(data8);
+        }
+    }
     class Program
     {
         static private RenderWindow window;
@@ -24,74 +62,111 @@ namespace QuartRenderPlayground
         };
 
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int initQuartRender();
+        public static extern int quartRender_initQuartRender();
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr createLogger();
+        public static extern IntPtr quartRender_createLogger();
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr createRenderer(IntPtr errorLog, uint sizex, uint sizey, uint rendererType);
+        public static extern IntPtr quartRender_createRenderer(IntPtr errorLog, uint sizex, uint sizey, uint rendererType);
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int renderImage(IntPtr renderer, IntPtr errorLog);
+        public static extern int quartRender_renderImage(IntPtr renderer, IntPtr errorLog);
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        unsafe public static extern void getRenderImage(IntPtr renderer, byte**imgbug, uint *sizex, uint *sizey);
+        unsafe public static extern void quartRender_getRenderImage(IntPtr renderer, byte**imgbug, uint *sizex, uint *sizey);
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        unsafe public static extern int getAndAllowClose(IntPtr renderer, IntPtr errorLog, bool *val);
+        unsafe public static extern int quartRender_getAndAllowClose(IntPtr renderer, IntPtr errorLog, bool *val);
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int exitQuartRender();
+        public static extern int quartRender_exitQuartRender();
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        unsafe public static extern void getLogString(IntPtr errorLog, StringBuilder str, uint *len);
+        unsafe public static extern void quartRender_getLogString(IntPtr errorLog, StringBuilder str, uint* len);
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        unsafe public static extern int quartRender_getAndPopLastKeyboardInput(IntPtr renderer, IntPtr errorLog, KeyboardInput *keyboardInput);
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        unsafe public static extern int quartRender_getCurrentCursorPosition(IntPtr renderer, IntPtr errorLog, CursorPosition *cursorPosition);
+        
+
+
+        //imgui
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int IMGUI_showDemoWindow(IntPtr renderer, IntPtr errorLog);
 
         //TESTS!!
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int addTestError(IntPtr errorLog);
+        public static extern int quartRender_addTestError(IntPtr errorLog);
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int drawTest(IntPtr renderer, IntPtr errorLog, string name, float posx, float posy);
+        public static extern string quartRender_runTests();
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int destroyAllDrawTests();
+        public static extern int quartRender_drawTest(IntPtr renderer, IntPtr errorLog, string name, float posx, float posy);
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int testFunc(string arg);
+        public static extern int quartRender_destroyAllDrawTests();
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int quartRender_testFunc(string arg);
 
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void windowTest();
+        public static extern void quartRender_windowTest();
 
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        unsafe public static extern void imageTest(byte**imgbuf,uint*sizex, uint*sizey);
+        unsafe public static extern void quartRender_imageTest(byte**imgbuf,uint*sizex, uint*sizey);
 
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        unsafe public static extern int renderImageTest(byte** imgbuf, uint *sizex, uint *sizey);
+        unsafe public static extern int quartRender_renderImageTest(byte** imgbuf, uint *sizex, uint *sizey);
 
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int startTestRenderer(uint sizex, uint sizey);
+        public static extern int quartRender_startTestRenderer(uint sizex, uint sizey);
 
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int stopTestRenderer();
+        public static extern int quartRender_stopTestRenderer();
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        unsafe public static extern void testStringFunc(StringBuilder str, uint *len);
+        unsafe public static extern void quartRender_testStringFunc(StringBuilder str, uint *len);
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        unsafe public static extern int quartRender_structPassTest(testStruct *tststrc);
 
         //TESTS!!
+
+
+        unsafe static CursorPosition safeGetCursorPosition(IntPtr renderer, IntPtr errorLog)
+        {
+            CursorPosition retval;
+            quartRender_getCurrentCursorPosition(renderer, errorLog, &retval);
+            return retval;
+        }
+
+        unsafe static KeyboardInput safeGetLastKeyboardInput(IntPtr renderer, IntPtr errorLog)
+        {
+            KeyboardInput retval;
+            quartRender_getAndPopLastKeyboardInput(renderer, errorLog, &retval);
+            return retval;
+        }
+
+        unsafe static testStruct safeStructPassTest()
+        {
+            testStruct tst;
+            quartRender_structPassTest(&tst);
+            return tst;
+        }
+
 
         unsafe static string safeGetTestString()
         {
             uint len;
-            testStringFunc(null, &len);
+            quartRender_testStringFunc(null, &len);
             StringBuilder ret = new StringBuilder((int)len);
 
-            testStringFunc(ret, &len);
+            quartRender_testStringFunc(ret, &len);
             return ret.ToString();
         }
 
         unsafe static string safeGetLogString(IntPtr errorLog)
         {
             uint len;
-            getLogString(errorLog,null,&len);
+            quartRender_getLogString(errorLog,null,&len);
             StringBuilder ret = new StringBuilder((int)len);
-            getLogString(errorLog,ret,&len);
+            quartRender_getLogString(errorLog,ret,&len);
             return ret.ToString();
         }
         
 
         unsafe static Image getRenderImageTest()
         {
-            if (startTestRenderer(1000, 1000) != 0)
+            if (quartRender_startTestRenderer(1000, 1000) != 0)
             {
                 Console.WriteLine("test renderer could not start!");
             }
@@ -101,7 +176,7 @@ namespace QuartRenderPlayground
             byte* buf;
             uint sizex;
             uint sizey;
-            if (renderImageTest(&buf, &sizex, &sizey) != 0)
+            if (quartRender_renderImageTest(&buf, &sizex, &sizey) != 0)
             {
                 Console.WriteLine("render image test failed!");
                 return new Image(1,1);
@@ -116,7 +191,7 @@ namespace QuartRenderPlayground
             {
                 finalbuf[i] = *(buf + i);
             }
-            stopTestRenderer();
+            quartRender_stopTestRenderer();
             return new Image(sizex,sizey,finalbuf);
         }
 
@@ -127,12 +202,12 @@ namespace QuartRenderPlayground
             uint sizey;
             if (whichFunc == "imageTest")
             {
-                imageTest(&buf, &sizex, &sizey);
+                quartRender_imageTest(&buf, &sizex, &sizey);
             }
             else
             {
                 //Console.WriteLine("choosed render image!");
-                getRenderImage(m_renderer, &buf, &sizex, &sizey);
+                quartRender_getRenderImage(m_renderer, &buf, &sizex, &sizey);
             }
             //Console.WriteLine("x and y dim: ");
             //Console.WriteLine(sizex);
@@ -154,19 +229,20 @@ namespace QuartRenderPlayground
         unsafe static bool safeGetAndAllowClose(IntPtr renderer, IntPtr errorLog)
         {
             bool retval;
-            getAndAllowClose(renderer,errorLog,&retval);
+            quartRender_getAndAllowClose(renderer,errorLog,&retval);
             return retval;
         }
 
         static void Main(string[] args)
         {
-            initQuartRender();
-            m_errorLog = createLogger();
-            m_renderer = createRenderer(m_errorLog,1000,1000, (uint)RendererTypes.onscreenRendererIMGUI);
+            safeStructPassTest().display();
+            Console.WriteLine(quartRender_runTests());
+            quartRender_initQuartRender();
+            m_errorLog = quartRender_createLogger();
+            m_renderer = quartRender_createRenderer(m_errorLog,1000,1000, (uint)RendererTypes.onscreenRendererIMGUI);
 
-
-            //IntPtr tempErrorLog = createLogger();
-            //IntPtr tempRenderer = createRenderer(tempErrorLog, 1000, 1000, (uint)RendererTypes.onscreenRenderer);
+            IntPtr tempErrorLog = quartRender_createLogger();
+            IntPtr tempRenderer = quartRender_createRenderer(tempErrorLog, 1000, 1000, (uint)RendererTypes.onscreenRenderer);
 
             Console.WriteLine("renderer call finished.");
             if (m_renderer == null)
@@ -184,11 +260,12 @@ namespace QuartRenderPlayground
             window = new RenderWindow(mode, "test");
             CircleShape cs = new CircleShape(100.0f);
             cs.FillColor = Color.Green;
-            window.SetFramerateLimit(0);
+            window.SetFramerateLimit(60);
             window.SetActive();
 
 
 
+            bool wHeld = false;
 
 
             //sprite.Position = new Vector2f(100,100);
@@ -201,30 +278,66 @@ namespace QuartRenderPlayground
             {
                 time = clock.Restart();
 
-                //Console.WriteLine(1/time.AsSeconds());
+
 
                 i -= Math.Truncate(i);
-                i += time.AsSeconds();
+                //i += time.AsSeconds();
 
                 
                 if (!safeGetAndAllowClose(m_renderer, m_errorLog))
                 {
 
                     //drawTest(m_renderer, m_errorLog, "asd", (float)i, 0);
-                    drawTest(m_renderer, m_errorLog, "asd2", 0, (float)i);
-                    renderImage(m_renderer, m_errorLog);
+                    quartRender_drawTest(m_renderer, m_errorLog, "asd2", 0, (float)i);
+
+
+                    IMGUI_showDemoWindow(m_renderer, m_errorLog);
+                    quartRender_renderImage(m_renderer, m_errorLog);
+
+
+                    CursorPosition cursorPos = safeGetCursorPosition(m_renderer, m_errorLog);
+                    Console.WriteLine("pos x: {0}, pos y: {1}, captured by IMGUI: {2}",cursorPos.xpos,cursorPos.ypos,cursorPos.capturedByIMGUI);
+
+
+                    if (wHeld)
+                    {
+                        i += time.AsSeconds();
+                    }
+
+
+                    KeyboardInput input;
+                    while ((input = safeGetLastKeyboardInput(m_renderer, m_errorLog)).isValid)
+                    {
+                        if (input.capturedByIMGUI)
+                        {
+                            continue;
+                        }
+                        if (input.key == Encoding.ASCII.GetBytes("W")[0] && input.action == 1)
+                        {
+                            wHeld = true;
+                            //Console.WriteLine("W");
+
+
+                        }
+                        if (input.key == Encoding.ASCII.GetBytes("W")[0] && input.action == 0)
+                        {
+                            wHeld = false;
+                        }
+                    }
+
                 }
 
-
+                //Console.WriteLine(1 / time.AsSeconds());
+                //quartRender_addTestError(m_errorLog);
                 //Console.WriteLine(safeGetLogString(m_errorLog));
-                
-                /*
+
+
                 if (!safeGetAndAllowClose(tempRenderer, tempErrorLog))
                 {
-                    drawTest(tempRenderer, tempErrorLog, "asd",0,0);
-                    renderImage(tempRenderer, tempErrorLog);
+                    quartRender_drawTest(tempRenderer, tempErrorLog, "asd",0,0);
+                    quartRender_renderImage(tempRenderer, tempErrorLog);
                 }
-                */
+                
 
 
 
@@ -239,7 +352,7 @@ namespace QuartRenderPlayground
 
             //windowTest();
             //Console.WriteLine(testFunc("asdasd"));
-            exitQuartRender();
+            quartRender_exitQuartRender();
         }
 
         static private void OnResize(object sender, SizeEventArgs e)
