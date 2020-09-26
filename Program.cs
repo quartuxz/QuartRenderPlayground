@@ -14,6 +14,12 @@ using SFML.Window;
 namespace QuartRenderPlayground
 {
 
+    [StructLayout(LayoutKind.Sequential)]
+    struct PlanetCharacteristics
+    {
+        public double radius;
+    }
+
 
     [StructLayout(LayoutKind.Sequential)]
     struct KeyboardInput
@@ -81,12 +87,19 @@ namespace QuartRenderPlayground
         unsafe public static extern int quartRender_getAndPopLastKeyboardInput(IntPtr renderer, IntPtr errorLog, KeyboardInput *keyboardInput);
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
         unsafe public static extern int quartRender_getCurrentCursorPosition(IntPtr renderer, IntPtr errorLog, CursorPosition *cursorPosition);
-        
+
+
+        //drawing
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int quartRender_createPlanet(IntPtr errorlog, string planetClassName, PlanetCharacteristics planetCharacteristics);
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int quartRender_drawPlanet(IntPtr renderer, IntPtr errorLog, string planetClassName, string planetName, double posx, double posy);
+        //~drawing
 
 
         //imgui
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int IMGUI_showDemoWindow(IntPtr renderer, IntPtr errorLog);
+        unsafe public static extern void igShowDemoWindow(bool *p_open);
 
         //TESTS!!
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -241,6 +254,11 @@ namespace QuartRenderPlayground
             m_errorLog = quartRender_createLogger();
             m_renderer = quartRender_createRenderer(m_errorLog,1000,1000, (uint)RendererTypes.onscreenRendererIMGUI);
 
+            PlanetCharacteristics tempPlanetCharacteristics;
+            tempPlanetCharacteristics.radius = 10;
+            quartRender_createPlanet(m_errorLog,"earth", tempPlanetCharacteristics);
+
+
             IntPtr tempErrorLog = quartRender_createLogger();
             IntPtr tempRenderer = quartRender_createRenderer(tempErrorLog, 1000, 1000, (uint)RendererTypes.onscreenRenderer);
 
@@ -277,26 +295,39 @@ namespace QuartRenderPlayground
             while (window.IsOpen)
             {
                 time = clock.Restart();
-
+                
 
 
                 i -= Math.Truncate(i);
-                //i += time.AsSeconds();
+                i += time.AsSeconds();
 
                 
                 if (!safeGetAndAllowClose(m_renderer, m_errorLog))
                 {
 
                     //drawTest(m_renderer, m_errorLog, "asd", (float)i, 0);
-                    quartRender_drawTest(m_renderer, m_errorLog, "asd2", 0, (float)i);
+                    //quartRender_drawTest(m_renderer, m_errorLog, "asd2", 0, (float)i);
+                    /*
+                    if(quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "earth.001", (float)i, (float)i) == -1)
+                    {
+                        Console.WriteLine("PLANET WAS NOT DRAWN DUE TO ERROR!");
+                    }
+                    */
+                    bool temp = true;
+
+                    unsafe
+                    {
+                        
+                        igShowDemoWindow(&temp);
+                    }
+                    
 
 
-                    IMGUI_showDemoWindow(m_renderer, m_errorLog);
                     quartRender_renderImage(m_renderer, m_errorLog);
 
 
                     CursorPosition cursorPos = safeGetCursorPosition(m_renderer, m_errorLog);
-                    Console.WriteLine("pos x: {0}, pos y: {1}, captured by IMGUI: {2}",cursorPos.xpos,cursorPos.ypos,cursorPos.capturedByIMGUI);
+                    //Console.WriteLine("pos x: {0}, pos y: {1}, captured by IMGUI: {2}",cursorPos.xpos,cursorPos.ypos,cursorPos.capturedByIMGUI);
 
 
                     if (wHeld)
