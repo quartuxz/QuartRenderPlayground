@@ -38,7 +38,30 @@ namespace QuartRenderPlayground
         public double xpos;
         public double ypos;
         public bool capturedByIMGUI;
+
+        public string getDisplayString()
+        {
+            string retval = "";
+            retval += "{x position: " + xpos.ToString() + ", y position: " + ypos.ToString() + ", is captured by imgui?: " + capturedByIMGUI.ToString() + "}";
+            return retval;
+        }
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    struct ScrollInput
+    {
+        public double xoffset;
+        public double yoffset;
+        public CursorPosition cursorPosition;
+        public bool isValid;
+
+        public string getDisplayString()
+        {
+            string retval = "";
+            retval += "{x offset: " + xoffset.ToString() +", y offset: "+ yoffset.ToString()+", cursorPosition: "+cursorPosition.getDisplayString()+", is valid?: "+isValid.ToString() +"}" ;
+            return retval;
+        }
+    };
 
 
     [StructLayout(LayoutKind.Sequential)]
@@ -83,11 +106,16 @@ namespace QuartRenderPlayground
         public static extern int quartRender_exitQuartRender();
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
         unsafe public static extern void quartRender_getLogString(IntPtr errorLog, StringBuilder str, uint* len);
+
+        //input
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
         unsafe public static extern int quartRender_getAndPopLastKeyboardInput(IntPtr renderer, IntPtr errorLog, KeyboardInput *keyboardInput);
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
         unsafe public static extern int quartRender_getCurrentCursorPosition(IntPtr renderer, IntPtr errorLog, CursorPosition *cursorPosition);
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        unsafe public static extern int quartRender_getAndPopLastScrollInput(IntPtr renderer, IntPtr errorLog, ScrollInput *scrollInput);
 
+        //~input
 
         //drawing
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -96,6 +124,13 @@ namespace QuartRenderPlayground
         public static extern int quartRender_drawPlanet(IntPtr renderer, IntPtr errorLog, string planetClassName, string planetName, double posx, double posy);
         //~drawing
 
+
+        //camara
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int quartRender_zoom(IntPtr renderer, IntPtr errorLog, double delta);
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int quartRender_displace(IntPtr renderer, IntPtr errorLog, float displacex, float displacey, float displacez);
+        //~camara
 
         //imgui
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
@@ -135,6 +170,13 @@ namespace QuartRenderPlayground
         //TESTS!!
 
 
+        
+        unsafe static ScrollInput safeGetScrollInput(IntPtr renderer, IntPtr errorLog)
+        {
+            ScrollInput retval;
+            quartRender_getAndPopLastScrollInput(renderer, errorLog,&retval);
+            return retval;
+        }
         unsafe static CursorPosition safeGetCursorPosition(IntPtr renderer, IntPtr errorLog)
         {
             CursorPosition retval;
@@ -285,7 +327,6 @@ namespace QuartRenderPlayground
 
             bool wHeld = false;
 
-
             //sprite.Position = new Vector2f(100,100);
             double i = 0;
             window.Closed += OnClose;
@@ -307,12 +348,32 @@ namespace QuartRenderPlayground
 
                     //drawTest(m_renderer, m_errorLog, "asd", (float)i, 0);
                     //quartRender_drawTest(m_renderer, m_errorLog, "asd2", 0, (float)i);
-                    /*
-                    if(quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "earth.001", (float)i, (float)i) == -1)
+                    
+                    if(quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "earth.001", 0,0) == -1)
                     {
                         Console.WriteLine("PLANET WAS NOT DRAWN DUE TO ERROR!");
                     }
-                    */
+
+
+
+
+                    ScrollInput scrollInput;
+
+                    while ((scrollInput = safeGetScrollInput(m_renderer,m_errorLog)).isValid)
+                    {
+                        Console.WriteLine(scrollInput.getDisplayString());
+                        if (!scrollInput.cursorPosition.capturedByIMGUI)
+                        {
+                            quartRender_zoom(m_renderer, m_errorLog, scrollInput.yoffset / 50);
+                            float displacex = (float)scrollInput.cursorPosition.xpos, displacey = (float)scrollInput.cursorPosition.ypos;
+                            displacex = -(displacex - 500) / (500*10);
+                            displacey = (displacey - 500) / (500*10);
+                            quartRender_displace(m_renderer,m_errorLog,displacex,displacey,0);
+                        }
+ 
+                        //Console.WriteLine(scrollInput.xoffset);
+                    }
+
                     bool temp = true;
 
                     unsafe
