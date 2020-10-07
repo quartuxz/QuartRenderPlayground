@@ -129,7 +129,11 @@ namespace QuartRenderPlayground
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern int quartRender_zoom(IntPtr renderer, IntPtr errorLog, double delta);
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int quartRender_displace(IntPtr renderer, IntPtr errorLog, float displacex, float displacey, float displacez);
+        public static extern double quartRender_getZoom(IntPtr renderer);
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int quartRender_setZoom(IntPtr renderer, IntPtr errorLog, double value);
+        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int quartRender_displace(IntPtr renderer, IntPtr errorLog, double displacex, double displacey, double displacez);
         //~camara
 
         //imgui
@@ -137,40 +141,51 @@ namespace QuartRenderPlayground
         unsafe public static extern void igShowDemoWindow(bool *p_open);
 
         //TESTS!!
-        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int quartRender_addTestError(IntPtr errorLog);
-        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern string quartRender_runTests();
-        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int quartRender_drawTest(IntPtr renderer, IntPtr errorLog, string name, float posx, float posy);
-        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int quartRender_destroyAllDrawTests();
-        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int quartRender_testFunc(string arg);
+        //newer tests
 
+
+            [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+            public static extern int quartRender_drawTest(IntPtr renderer, IntPtr errorLog, string name, float posx, float posy);
+            [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+            public static extern int quartRender_drawCubeTest(IntPtr renderer, IntPtr errorLog, double posx, double posy, double posz);
+        //weird tests
+            [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+            public static extern int quartRender_addTestError(IntPtr errorLog);
+            [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+            public static extern string quartRender_runTests();
+
+            [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+            public static extern int quartRender_destroyAllDrawTests();
+            [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+            public static extern int quartRender_testFunc(string arg);
+
+
+
+            [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+            unsafe public static extern void quartRender_imageTest(byte**imgbuf,uint*sizex, uint*sizey);
+
+            [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+            unsafe public static extern int quartRender_renderImageTest(byte** imgbuf, uint *sizex, uint *sizey);
+
+            [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+            public static extern int quartRender_startTestRenderer(uint sizex, uint sizey);
+
+            [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+            public static extern int quartRender_stopTestRenderer();
+            [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+            unsafe public static extern void quartRender_testStringFunc(StringBuilder str, uint *len);
+            [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
+            unsafe public static extern int quartRender_structPassTest(testStruct *tststrc);
+        //full tests(meant to be used standalone)
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
         public static extern void quartRender_windowTest();
-
         [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        unsafe public static extern void quartRender_imageTest(byte**imgbuf,uint*sizex, uint*sizey);
-
-        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        unsafe public static extern int quartRender_renderImageTest(byte** imgbuf, uint *sizex, uint *sizey);
-
-        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int quartRender_startTestRenderer(uint sizex, uint sizey);
-
-        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern int quartRender_stopTestRenderer();
-        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        unsafe public static extern void quartRender_testStringFunc(StringBuilder str, uint *len);
-        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        unsafe public static extern int quartRender_structPassTest(testStruct *tststrc);
+        public static extern void quartRender_full3DWindowTest();
 
         //TESTS!!
 
 
-        
+
         unsafe static ScrollInput safeGetScrollInput(IntPtr renderer, IntPtr errorLog)
         {
             ScrollInput retval;
@@ -290,7 +305,8 @@ namespace QuartRenderPlayground
 
         static void Main(string[] args)
         {
-            safeStructPassTest().display();
+            //quartRender_full3DWindowTest();
+            //safeStructPassTest().display();
             Console.WriteLine(quartRender_runTests());
             quartRender_initQuartRender();
             m_errorLog = quartRender_createLogger();
@@ -304,7 +320,6 @@ namespace QuartRenderPlayground
             IntPtr tempErrorLog = quartRender_createLogger();
             IntPtr tempRenderer = quartRender_createRenderer(tempErrorLog, 1000, 1000, (uint)RendererTypes.onscreenRenderer);
 
-            Console.WriteLine("renderer call finished.");
             if (m_renderer == null)
             {
                 Console.WriteLine("failed to create renderer!");
@@ -325,7 +340,8 @@ namespace QuartRenderPlayground
 
 
 
-            bool wHeld = false;
+            bool dHeld = false;
+            bool aHeld = false;
 
             //sprite.Position = new Vector2f(100,100);
             double i = 0;
@@ -348,30 +364,58 @@ namespace QuartRenderPlayground
 
                     //drawTest(m_renderer, m_errorLog, "asd", (float)i, 0);
                     //quartRender_drawTest(m_renderer, m_errorLog, "asd2", 0, (float)i);
+                    if (true)
+                    {
+
                     
-                    if(quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "earth.001", 0,0) == -1)
+                    if(quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "sun", 0,0) == -1)
+                    {
+                        Console.WriteLine("PLANET WAS NOT DRAWN DUE TO ERROR!");
+                    }
+
+                    if (quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "earth", 1, 0) == -1)
+                    {
+                        Console.WriteLine("PLANET WAS NOT DRAWN DUE TO ERROR!");
+                    }
+
+                    if (quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "moon", 1+(384400/(float)149600000), 0) == -1)
                     {
                         Console.WriteLine("PLANET WAS NOT DRAWN DUE TO ERROR!");
                     }
 
 
-
+                    }
+                    if (true) { 
+                    if(quartRender_drawCubeTest(m_renderer,m_errorLog,0.0f,0.0f,-10.0f) == -1)
+                    {
+                        Console.WriteLine("cube was not drawn!");
+                        Console.WriteLine(safeGetLogString(m_errorLog));
+                    }
+                    }
 
                     ScrollInput scrollInput;
 
                     while ((scrollInput = safeGetScrollInput(m_renderer,m_errorLog)).isValid)
                     {
-                        Console.WriteLine(scrollInput.getDisplayString());
+                        //Console.WriteLine(scrollInput.getDisplayString());
                         if (!scrollInput.cursorPosition.capturedByIMGUI)
                         {
-                            quartRender_zoom(m_renderer, m_errorLog, scrollInput.yoffset / 50);
-                            float displacex = (float)scrollInput.cursorPosition.xpos, displacey = (float)scrollInput.cursorPosition.ypos;
-                            displacex = -(displacex - 500) / (500*10);
-                            displacey = (displacey - 500) / (500*10);
-                            quartRender_displace(m_renderer,m_errorLog,displacex,displacey,0);
+                            double zoomMultiplyChange = 1.1;
+                            double currentZoomMultiplier = quartRender_getZoom(m_renderer);
+
+                            quartRender_setZoom(m_renderer, m_errorLog, currentZoomMultiplier*Math.Pow(zoomMultiplyChange,scrollInput.yoffset));
+                            if (scrollInput.yoffset > 0)
+                            {
+                                float displacex = (float)scrollInput.cursorPosition.xpos, displacey = (float)scrollInput.cursorPosition.ypos;
+                                displacex = -(displacex - 500) / (500);
+                                displacey = (displacey - 500) / (500);
+                                
+                                //quartRender_displace(m_renderer,m_errorLog,displacex,displacey,0);
+                            }
+                            Console.WriteLine(currentZoomMultiplier);
                         }
  
-                        //Console.WriteLine(scrollInput.xoffset);
+                        //Console.WriteLine(scrollInput.yoffset);
                     }
 
                     bool temp = true;
@@ -391,9 +435,18 @@ namespace QuartRenderPlayground
                     //Console.WriteLine("pos x: {0}, pos y: {1}, captured by IMGUI: {2}",cursorPos.xpos,cursorPos.ypos,cursorPos.capturedByIMGUI);
 
 
-                    if (wHeld)
+                    double displaceFactor = 0.01 / quartRender_getZoom(m_renderer);
+
+                    if (dHeld)
                     {
-                        i += time.AsSeconds();
+                        //i += time.AsSeconds();
+                        quartRender_displace(m_renderer, m_errorLog, -displaceFactor, 0, 0);
+                    }
+
+                    if (aHeld)
+                    {
+                        //i += time.AsSeconds();
+                        quartRender_displace(m_renderer, m_errorLog, displaceFactor, 0, 0);
                     }
 
 
@@ -404,16 +457,25 @@ namespace QuartRenderPlayground
                         {
                             continue;
                         }
-                        if (input.key == Encoding.ASCII.GetBytes("W")[0] && input.action == 1)
+                        if (input.key == Encoding.ASCII.GetBytes("D")[0] && input.action == 1)
                         {
-                            wHeld = true;
+                            dHeld = true;
                             //Console.WriteLine("W");
 
-
                         }
-                        if (input.key == Encoding.ASCII.GetBytes("W")[0] && input.action == 0)
+                        if (input.key == Encoding.ASCII.GetBytes("D")[0] && input.action == 0)
                         {
-                            wHeld = false;
+                            dHeld = false;
+                        }
+
+                        if (input.key == Encoding.ASCII.GetBytes("A")[0] && input.action == 1)
+                        {
+                            aHeld = true;
+                            //Console.WriteLine("W");
+                        }
+                        if (input.key == Encoding.ASCII.GetBytes("A")[0] && input.action == 0)
+                        {
+                            aHeld = false;
                         }
                     }
 
