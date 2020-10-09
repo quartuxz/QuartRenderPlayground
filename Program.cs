@@ -147,7 +147,7 @@ namespace QuartRenderPlayground
             [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
             public static extern int quartRender_drawTest(IntPtr renderer, IntPtr errorLog, string name, float posx, float posy);
             [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-            public static extern int quartRender_drawCubeTest(IntPtr renderer, IntPtr errorLog, double posx, double posy, double posz);
+            public static extern int quartRender_drawCubeTest(IntPtr renderer, IntPtr errorLog, double posx, double posy, double posz, double anglex, double angley, double anglez);
         //weird tests
             [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
             public static extern int quartRender_addTestError(IntPtr errorLog);
@@ -343,6 +343,8 @@ namespace QuartRenderPlayground
             bool dHeld = false;
             bool aHeld = false;
 
+            double angleAcumulator = 0;
+
             //sprite.Position = new Vector2f(100,100);
             double i = 0;
             window.Closed += OnClose;
@@ -357,6 +359,7 @@ namespace QuartRenderPlayground
 
                 i -= Math.Truncate(i);
                 i += time.AsSeconds();
+                double delta_time = time.AsSeconds();
 
                 
                 if (!safeGetAndAllowClose(m_renderer, m_errorLog))
@@ -385,8 +388,9 @@ namespace QuartRenderPlayground
 
 
                     }
-                    if (true) { 
-                    if(quartRender_drawCubeTest(m_renderer,m_errorLog,0.0f,0.0f,-10.0f) == -1)
+                    if (true) {
+                    angleAcumulator += delta_time*80;
+                    if(quartRender_drawCubeTest(m_renderer,m_errorLog,0.0f,0.0f,0.0f, angleAcumulator, angleAcumulator, angleAcumulator) == -1)
                     {
                         Console.WriteLine("cube was not drawn!");
                         Console.WriteLine(safeGetLogString(m_errorLog));
@@ -435,7 +439,7 @@ namespace QuartRenderPlayground
                     //Console.WriteLine("pos x: {0}, pos y: {1}, captured by IMGUI: {2}",cursorPos.xpos,cursorPos.ypos,cursorPos.capturedByIMGUI);
 
 
-                    double displaceFactor = 0.01 / quartRender_getZoom(m_renderer);
+                    double displaceFactor = delta_time / quartRender_getZoom(m_renderer);
 
                     if (dHeld)
                     {
