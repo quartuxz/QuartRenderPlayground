@@ -317,8 +317,8 @@ namespace QuartRenderPlayground
             quartRender_createPlanet(m_errorLog,"earth", tempPlanetCharacteristics);
 
 
-            IntPtr tempErrorLog = quartRender_createLogger();
-            IntPtr tempRenderer = quartRender_createRenderer(tempErrorLog, 1000, 1000, (uint)RendererTypes.onscreenRenderer);
+            //IntPtr tempErrorLog = quartRender_createLogger();
+            //IntPtr tempRenderer = quartRender_createRenderer(tempErrorLog, 1000, 1000, (uint)RendererTypes.onscreenRenderer);
 
             if (m_renderer == null)
             {
@@ -489,13 +489,13 @@ namespace QuartRenderPlayground
                 //quartRender_addTestError(m_errorLog);
                 //Console.WriteLine(safeGetLogString(m_errorLog));
 
-
+                /*
                 if (!safeGetAndAllowClose(tempRenderer, tempErrorLog))
                 {
                     quartRender_drawTest(tempRenderer, tempErrorLog, "asd",0,0);
                     quartRender_renderImage(tempRenderer, tempErrorLog);
                 }
-                
+                */
 
 
 
