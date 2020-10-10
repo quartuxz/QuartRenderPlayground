@@ -3,10 +3,8 @@
 layout(location = 0) in vec3 position;
 layout(location = 1) in vec3 color;
 
-uniform mat4 u_MVP;
-
 //DEPRECATED:
-//colors I picked at my whim
+//colors I picked at a whim
 //const vec3 vertexColors[] = vec3[](
 //	vec3(0.5f,0.5f,0.5f),
 //	vec3(0.3,0.6f,0.9f),
@@ -18,10 +16,21 @@ uniform mat4 u_MVP;
 
 
 layout(location = 0) out vec3 v_color;
+layout(location = 1) out vec3 v_normal;
+layout(location = 2) out vec3 v_worldPos;
 
 uniform mat4 u_MVP;
+uniform mat4 u_model;
+//figure out if we need and how to use the view matrix for lighting effects
+//say glossyness
+//uniform mat4 u_view;
 
 void main(){
-	gl_Position = u_MVP * vec4(position.x,position.y,position.z,1.0f)
+	vec4 transformed = (u_MVP) * vec4(position,1.0f);
+	v_normal = normalize(mat3(u_model)*position);
+	v_worldPos = vec3(u_model*vec4(position,1.0f));
+	gl_Position = transformed;
+	
+	
 	v_color = color;
 }
