@@ -9,20 +9,26 @@ layout(location = 0) out vec4 color;
 
 //const vec3 light_dir = vec3(1.0f,0.0f,0.0f);
 
-const vec3 light_pos = vec3(-10.0f,0.0f,0.0f);
+const vec3 light_pos = vec3(-3.0f,0.0f,0.0f);
+
+const vec3 camara_orientation = vec3(0.0f,0.0f,-1.0f);
 
 void main(){
 	
 	float dtl = distance(worldPos, light_pos);
 
-	float attenuation = (10/dtl);
+	//subject to change
+	float attenuation = (4/(dtl*dtl));
+	//float attenuation = 1;
 
 	vec3 light_dir = normalize(worldPos-light_pos);
+	//vec3 light_dir = vec3(1.0f,0.0f,0.0f);
 
 
 	//diffuse lighting
-	vec3 diffuseColor = vec3(0.8f,0.3f,0.3f);
-	//vec3 diffuseColor = flat_color;
+	//vec3 diffuseColor = vec3(0.8f,0.8f,0.3f);
+	vec3 diffuseColor = flat_color;
+	vec3 glossColor = flat_color;
 	//distance to light
 	
 
@@ -34,10 +40,10 @@ void main(){
 	vec3 final_diffuse = diffuseColor*max(dot(light_dir,-normal),0.0f)*attenuation;
 	
 	//glossy lighting
-	vec3 final_gloss = diffuseColor;
 	vec3 reflectVector = light_dir-2*(min(dot(light_dir,normal),0.0f))*normal;
 	//uses a hardcoded camara "view" to calculate, its pointing towards the -z axis.
-	final_gloss *= max(dot(reflectVector, -vec3(0.0f,0.0f,-1.0f)),0.0f)*attenuation;
+	//TODO: implement a non-fixed non-hardcoded camara with some data from the vertex shader, that in turn is sent from the dll.
+	vec3 final_gloss = glossColor*max(dot(reflectVector, -camara_orientation),0.0f)*attenuation;
 	//vec3 reflectVector = reflect(light_dir,normal);
 	
 	//ambient amount of light

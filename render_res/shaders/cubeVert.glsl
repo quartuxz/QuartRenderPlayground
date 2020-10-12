@@ -1,7 +1,8 @@
 #version 460 core
 
 layout(location = 0) in vec3 position;
-layout(location = 1) in vec3 color;
+layout(location = 1) in vec3 normal;
+layout(location = 2) in vec3 color;
 
 //DEPRECATED:
 //colors I picked at a whim
@@ -27,7 +28,7 @@ uniform mat4 u_model;
 
 void main(){
 	vec4 transformed = (u_MVP) * vec4(position,1.0f);
-	v_normal = normalize(mat3(u_model)*position);
+	v_normal = normalize(mat3(u_model)*normal);
 	v_worldPos = vec3(u_model*vec4(position,1.0f));
 	gl_Position = transformed;
 	

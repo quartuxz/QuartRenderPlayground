@@ -342,6 +342,7 @@ namespace QuartRenderPlayground
 
             bool dHeld = false;
             bool aHeld = false;
+            bool spaceHeld = false;
 
             double angleAcumulator = 0;
 
@@ -389,7 +390,11 @@ namespace QuartRenderPlayground
 
                     }
                     if (true) {
-                    angleAcumulator += delta_time*80;
+                        if (!spaceHeld)
+                        {
+                            angleAcumulator += delta_time * 80;
+                        }
+                    
                     if(quartRender_drawCubeTest(m_renderer,m_errorLog,0.0f,0.0f,0.0f, angleAcumulator, angleAcumulator, angleAcumulator) == -1)
                     {
                         Console.WriteLine("cube was not drawn!");
@@ -461,25 +466,33 @@ namespace QuartRenderPlayground
                         {
                             continue;
                         }
-                        if (input.key == Encoding.ASCII.GetBytes("D")[0] && input.action == 1)
+                        else if (input.key == Encoding.ASCII.GetBytes("D")[0] && input.action == 1)
                         {
                             dHeld = true;
                             //Console.WriteLine("W");
 
                         }
-                        if (input.key == Encoding.ASCII.GetBytes("D")[0] && input.action == 0)
+                        else if (input.key == Encoding.ASCII.GetBytes("D")[0] && input.action == 0)
                         {
                             dHeld = false;
                         }
 
-                        if (input.key == Encoding.ASCII.GetBytes("A")[0] && input.action == 1)
+                        else if (input.key == Encoding.ASCII.GetBytes("A")[0] && input.action == 1)
                         {
                             aHeld = true;
                             //Console.WriteLine("W");
                         }
-                        if (input.key == Encoding.ASCII.GetBytes("A")[0] && input.action == 0)
+                        else if (input.key == Encoding.ASCII.GetBytes("A")[0] && input.action == 0)
                         {
                             aHeld = false;
+                        }
+                        else if (input.key == Encoding.ASCII.GetBytes(" ")[0] && input.action == 1)
+                        {
+                            spaceHeld = true;
+                        }
+                        else if (input.key == Encoding.ASCII.GetBytes(" ")[0] && input.action == 0)
+                        {
+                            spaceHeld = false;
                         }
                     }
 
