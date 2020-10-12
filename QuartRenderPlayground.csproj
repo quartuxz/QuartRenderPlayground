@@ -53,6 +53,12 @@
     <None Update="render_res\shaders\flatTestVert.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="render_res\shaders\planetSphereFrag.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="render_res\shaders\planetSphereVert.glsl">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="render_res\shaders\testFrag.glsl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

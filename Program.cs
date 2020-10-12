@@ -374,22 +374,29 @@ namespace QuartRenderPlayground
                     
                     if(quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "sun", 0,0) == -1)
                     {
+                        Console.WriteLine(safeGetLogString(m_errorLog));
                         Console.WriteLine("PLANET WAS NOT DRAWN DUE TO ERROR!");
                     }
 
-                    if (quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "earth", 1, 0) == -1)
+                    if (quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "earth", 3, 0) == -1)
                     {
                         Console.WriteLine("PLANET WAS NOT DRAWN DUE TO ERROR!");
                     }
 
+                        if (false)
+                        {
+
+                        
                     if (quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "moon", 1+(384400/(float)149600000), 0) == -1)
                     {
                         Console.WriteLine("PLANET WAS NOT DRAWN DUE TO ERROR!");
                     }
+                        }
+
 
 
                     }
-                    if (true) {
+                    if (false) {
                         if (!spaceHeld)
                         {
                             angleAcumulator += delta_time * 80;
