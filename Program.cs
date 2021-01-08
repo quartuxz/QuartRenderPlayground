@@ -11,6 +11,9 @@ using SFML.Window;
 
 
 
+
+
+
 namespace QuartRenderPlayground
 {
 
@@ -137,8 +140,7 @@ namespace QuartRenderPlayground
         //~camara
 
         //imgui
-        [DllImport("QuartRender.dll", CallingConvention = CallingConvention.Cdecl)]
-        unsafe public static extern void igShowDemoWindow(bool *p_open);
+
 
         //TESTS!!
         //newer tests
@@ -313,7 +315,7 @@ namespace QuartRenderPlayground
             m_renderer = quartRender_createRenderer(m_errorLog,1000,1000, (uint)RendererTypes.onscreenRendererIMGUI);
 
             PlanetCharacteristics tempPlanetCharacteristics;
-            tempPlanetCharacteristics.radius = 10;
+            tempPlanetCharacteristics.radius = 1000;
             quartRender_createPlanet(m_errorLog,"earth", tempPlanetCharacteristics);
 
 
@@ -378,20 +380,20 @@ namespace QuartRenderPlayground
                         Console.WriteLine("PLANET WAS NOT DRAWN DUE TO ERROR!");
                     }
 
-                    if (quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "earth", 3, 0) == -1)
+                    if (quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "earth", 30000, 0) == -1)
                     {
                         Console.WriteLine("PLANET WAS NOT DRAWN DUE TO ERROR!");
                     }
 
-                        if (false)
-                        {
+                    if (false)
+                    {
 
                         
                     if (quartRender_drawPlanet(m_renderer, m_errorLog, "earth", "moon", 1+(384400/(float)149600000), 0) == -1)
                     {
                         Console.WriteLine("PLANET WAS NOT DRAWN DUE TO ERROR!");
                     }
-                        }
+                    }
 
 
 
@@ -434,14 +436,11 @@ namespace QuartRenderPlayground
                         //Console.WriteLine(scrollInput.yoffset);
                     }
 
-                    bool temp = true;
+                    bool temp = false;
 
-                    unsafe
-                    {
-                        
-                        igShowDemoWindow(&temp);
+                    if(!temp) { 
+                        ImGuiNET.ImGui.ShowDemoWindow(ref temp);
                     }
-                    
 
 
                     quartRender_renderImage(m_renderer, m_errorLog);
